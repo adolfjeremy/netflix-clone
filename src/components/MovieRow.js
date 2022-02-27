@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const base_image_url = "https://image.tmdb.org/t/p/original/";
 
-function MovieRow({ title, fetchURL }) {
+function MovieRow({ title, fetchURL, isLargeImage }) {
     const [movies, setMovie] = useState([]);
 
     useEffect(() => {
@@ -22,8 +22,13 @@ function MovieRow({ title, fetchURL }) {
                 {movies.map((movie) => {
                     return (
                         <Poster
+                            className={isLargeImage ? "large-image" : ""}
                             key={movie.id}
-                            src={`${base_image_url}${movie.poster_path}`}
+                            src={`${base_image_url}${
+                                isLargeImage
+                                    ? movie.poster_path
+                                    : movie.backdrop_path
+                            }`}
                             alt={movie.name}
                         />
                     );
@@ -35,12 +40,18 @@ function MovieRow({ title, fetchURL }) {
 
 const Container = styled.section`
     width: 100%;
+    h2 {
+        margin: 0 4% 0.5em 4%;
+        font-size: 1.4vw;
+        line-height: 1.25vw;
+    }
 `;
 const MoviePoster = styled.div`
     display: flex;
     overflow-x: scroll;
     overflow-y: hidden;
-    padding: 20px;
+    padding: 20px 4%;
+    border-radius: 8px;
     &::-webkit-scrollbar {
         display: none;
     }
@@ -49,7 +60,8 @@ const Poster = styled.img`
     object-fit: contain;
     margin-right: 10px;
     width: 100%;
-    max-height: 100px;
+    max-height: 150px;
+    border-radius: 8px;
     transition: transform 250ms;
     &:hover {
         transform: scale(1.08);

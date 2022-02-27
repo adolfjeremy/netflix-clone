@@ -1,11 +1,14 @@
 import "./App.css";
 import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
 
 function App() {
     return (
         <div className="App">
-            <h1>Netflix Clone By Jeremy</h1>
-            <Home />
+            <Navbar />
+            <main>
+                <Home />
+            </main>
         </div>
     );
 }
