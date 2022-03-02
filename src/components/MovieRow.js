@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "./../axios";
 import styled from "styled-components";
+import YouTube from "react-youtube";
+import movieTrailer from "movie-trailer";
 
 const base_image_url = "https://image.tmdb.org/t/p/original/";
 
 function MovieRow({ title, fetchURL, isLargeImage }) {
     const [movies, setMovie] = useState([]);
+    const [trailerUrl, setTrailerUrl] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -15,6 +18,29 @@ function MovieRow({ title, fetchURL, isLargeImage }) {
         };
         fetchData();
     }, [fetchURL]);
+
+    const opts = {
+        height: "390",
+        width: "100%",
+        playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 1,
+        },
+    };
+
+    const handleClick = (movie) => {
+        if (trailerUrl) {
+            setTrailerUrl("");
+        } else {
+            movieTrailer(
+                movie?.title || movie?.name || movie?.original_name || ""
+            ).then((url) => {
+                const urlParams = new URLSearchParams(new URL(url).search);
+                setTrailerUrl(urlParams.get("v"));
+            });
+        }
+    };
+
     return (
         <Container>
             <h2>{title}</h2>
@@ -22,6 +48,7 @@ function MovieRow({ title, fetchURL, isLargeImage }) {
                 {movies.map((movie) => {
                     return (
                         <Poster
+                            onClick={() => handleClick(movie)}
                             className={isLargeImage ? "large-image" : ""}
                             key={movie.id}
                             src={`${base_image_url}${
@@ -34,6 +61,7 @@ function MovieRow({ title, fetchURL, isLargeImage }) {
                     );
                 })}
             </MoviePoster>
+            {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
         </Container>
     );
 }
@@ -63,6 +91,7 @@ const Poster = styled.img`
     max-height: 150px;
     border-radius: 8px;
     transition: transform 250ms;
+    cursor: pointer;
     &:hover {
         transform: scale(1.08);
     }
